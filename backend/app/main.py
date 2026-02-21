@@ -133,8 +133,8 @@ async def query(request: QueryRequest):
 
         log_query(
             query=question,
-            classification="greeter",
-            model_used="none",
+            classification="greeter",  # internal log keeps "greeter" for observability
+            model_used=settings.SIMPLE_MODEL,
             complexity_score=0,
             signals={},
             tokens_input=0,
@@ -148,8 +148,8 @@ async def query(request: QueryRequest):
         return QueryResponse(
             answer=GREETING_RESPONSE,
             metadata=QueryMetadata(
-                model_used="none",
-                classification="greeter",
+                model_used=settings.SIMPLE_MODEL,
+                classification="simple",
                 tokens=TokenUsage(input=0, output=0),
                 latency_ms=total_latency,
                 chunks_retrieved=0,
@@ -160,7 +160,7 @@ async def query(request: QueryRequest):
         )
 
     # 3. Classify query
-    classification, model, score, signals = classify_query(question)
+    classification, model, complexity_score, signals = classify_query(question)
 
     # 4. Embed query and retrieve chunks
     query_embedding = embedder.embed_query(question)
@@ -235,7 +235,7 @@ async def query(request: QueryRequest):
         query=question,
         classification=classification,
         model_used=model,
-        complexity_score=score,
+        complexity_score=complexity_score,
         signals=signals,
         tokens_input=prompt_tokens,
         tokens_output=completion_tokens,
