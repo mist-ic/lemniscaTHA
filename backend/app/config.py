@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     COMPLEX_MAX_TOKENS: int = 1024
 
     model_config = {
-        "env_file": ".env",
+        "env_file": str(PROJECT_ROOT / ".env"),
         "env_file_encoding": "utf-8",
         "extra": "ignore",
     }
