@@ -1,0 +1,52 @@
+"""
+ClearPath RAG Chatbot — Configuration
+
+Uses pydantic-settings to load environment variables from .env file.
+Contains all constants for the RAG pipeline.
+"""
+
+from functools import lru_cache
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    """Application settings loaded from environment variables."""
+
+    # --- API Keys ---
+    GROQ_API_KEY: str
+
+    # --- Server ---
+    PORT: int = 8000
+
+    # --- Models ---
+    SIMPLE_MODEL: str = "llama-3.1-8b-instant"
+    COMPLEX_MODEL: str = "llama-3.3-70b-versatile"
+
+    # --- RAG Pipeline ---
+    CHUNK_SIZE: int = 400       # max tokens per chunk
+    CHUNK_OVERLAP: int = 60     # overlap tokens between adjacent chunks
+    TOP_K: int = 5              # number of top chunks to retrieve
+    SIMILARITY_THRESHOLD: float = 0.25  # minimum cosine similarity score
+
+    # --- Paths ---
+    DOCS_DIR: str = "docs"
+    INDEX_DIR: str = "index"
+
+    # --- Embedding Model ---
+    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
+
+    # --- Generation ---
+    SIMPLE_MAX_TOKENS: int = 512
+    COMPLEX_MAX_TOKENS: int = 1024
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore",
+    }
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    """Returns cached Settings instance (singleton)."""
+    return Settings()
