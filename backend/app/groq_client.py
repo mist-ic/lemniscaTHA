@@ -110,8 +110,9 @@ class GroqClient:
                     # Usage info (appears in the final chunk for Groq)
                     if hasattr(chunk, "x_groq") and chunk.x_groq and hasattr(chunk.x_groq, "usage"):
                         usage = chunk.x_groq.usage
-                        prompt_tokens = usage.prompt_tokens
-                        completion_tokens = usage.completion_tokens
+                        if usage is not None:
+                            prompt_tokens = usage.prompt_tokens
+                            completion_tokens = usage.completion_tokens
 
                 latency_ms = int((time.perf_counter() - start) * 1000)
 
