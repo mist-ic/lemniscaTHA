@@ -176,6 +176,17 @@ def _split_long_text(text: str, max_tokens: int) -> List[str]:
     return chunks if chunks else [text]
 
 
+def _is_pricing_or_table_content(text: str) -> bool:
+    """Check if text contains pricing/plan data that should be kept in larger chunks."""
+    text_lower = text.lower()
+    has_dollar = '$' in text
+    plan_names = {'free', 'pro', 'enterprise', 'starter', 'basic'}
+    has_plan = any(p in text_lower for p in plan_names)
+    has_table_markers = text.count('|') >= 3 or text.count('\t') >= 3
+    # Price + plan name = pricing table content
+    return (has_dollar and has_plan) or has_table_markers
+
+
 def _apply_overlap(chunks: List[str], overlap_tokens: int) -> List[str]:
     """Apply overlap between consecutive chunks by prepending tail of previous chunk."""
     if len(chunks) <= 1 or overlap_tokens <= 0:
@@ -199,12 +210,13 @@ def _apply_overlap(chunks: List[str], overlap_tokens: int) -> List[str]:
 
 def _post_merge_small_chunks(
     chunks: List[tuple],  # list of (chunk_text, section_heading) pairs
-    min_tokens: int = 30,
+    min_tokens: int = 80,
     max_tokens: int = 400,
 ) -> List[tuple]:
     """
-    Final pass: merge any remaining tiny chunks with neighbors.
-    This runs AFTER section splitting has created chunks.
+    Final pass: aggressively merge small chunks with neighbors.
+    Merges ACROSS section boundaries when chunks are too small.
+    Uses a higher max for pricing/table content (500 tokens).
     """
     if not chunks:
         return []
@@ -219,15 +231,20 @@ def _post_merge_small_chunks(
             buffer_heading = heading
             continue
 
-        # If current buffer is small, try merging with this chunk
-        if _estimate_tokens(buffer_text) < min_tokens:
-            combined = buffer_text + "\n\n" + text
-            if _estimate_tokens(combined) <= max_tokens:
-                buffer_text = combined
-                # Keep the more descriptive heading
-                if heading != "General":
-                    buffer_heading = heading
-                continue
+        buffer_tokens = _estimate_tokens(buffer_text)
+        next_tokens = _estimate_tokens(text)
+        combined = buffer_text + "\n\n" + text
+        combined_tokens = _estimate_tokens(combined)
+
+        # Determine max size — allow larger chunks for pricing/table content
+        effective_max = 500 if _is_pricing_or_table_content(combined) else max_tokens
+
+        # Merge if buffer is small OR next chunk is small, and combined fits
+        if (buffer_tokens < min_tokens or next_tokens < min_tokens) and combined_tokens <= effective_max:
+            buffer_text = combined
+            if heading != "General":
+                buffer_heading = heading
+            continue
 
         # Buffer is big enough, flush it
         merged.append((buffer_text, buffer_heading))
@@ -239,7 +256,8 @@ def _post_merge_small_chunks(
         if merged and _estimate_tokens(buffer_text) < min_tokens:
             prev_text, prev_heading = merged[-1]
             combined = prev_text + "\n\n" + buffer_text
-            if _estimate_tokens(combined) <= max_tokens:
+            effective_max = 500 if _is_pricing_or_table_content(combined) else max_tokens
+            if _estimate_tokens(combined) <= effective_max:
                 merged[-1] = (combined, prev_heading)
             else:
                 merged.append((buffer_text, buffer_heading))
@@ -253,7 +271,7 @@ def chunk_documents(
     documents: List[Document],
     chunk_size: int = 400,
     chunk_overlap: int = 60,
-    min_chunk_tokens: int = 30,
+    min_chunk_tokens: int = 80,
 ) -> List[Chunk]:
     """
     Chunk extracted documents into retrieval-ready pieces.
@@ -261,7 +279,8 @@ def chunk_documents(
     Features:
     - Structure-aware splitting by sections and paragraphs
     - FAQ Q&A pairs kept atomic
-    - Small chunk merging (minimum 30 tokens)
+    - Aggressive small chunk merging (min 80 tokens, across section boundaries)
+    - Pricing/table chunks allowed up to 500 tokens
     - Configurable size and overlap
 
     Args:
