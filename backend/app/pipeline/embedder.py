@@ -74,24 +74,28 @@ class Embedder:
         print(f"[Embedder] Embedding {len(chunks)} chunks with ONNX...")
         texts = [c.text for c in chunks]
 
-        # Tokenize all texts (batched)
-        encoded = self.tokenizer(
-            texts, padding=True, truncation=True, max_length=512, return_tensors="np"
-        )
-        input_ids = encoded["input_ids"].astype(np.int64)
-        attention_mask = encoded["attention_mask"].astype(np.int64)
-        token_type_ids = encoded.get("token_type_ids", np.zeros_like(input_ids)).astype(np.int64)
+        # Process in batches to avoid OOM on constrained environments (Cloud Run 2Gi)
+        batch_size = 16
+        all_embeddings = []
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i + batch_size]
+            encoded = self.tokenizer(
+                batch_texts, padding=True, truncation=True, max_length=512, return_tensors="np"
+            )
+            input_ids = encoded["input_ids"].astype(np.int64)
+            attention_mask = encoded["attention_mask"].astype(np.int64)
+            token_type_ids = encoded.get("token_type_ids", np.zeros_like(input_ids)).astype(np.int64)
 
-        # Run ONNX inference
-        outputs = self.session.run(None, {
-            "input_ids": input_ids,
-            "attention_mask": attention_mask,
-            "token_type_ids": token_type_ids,
-        })
-        token_embeddings = outputs[0]  # shape: (batch, seq_len, 384)
+            outputs = self.session.run(None, {
+                "input_ids": input_ids,
+                "attention_mask": attention_mask,
+                "token_type_ids": token_type_ids,
+            })
+            batch_emb = self._mean_pool_and_normalize(outputs[0], attention_mask)
+            all_embeddings.append(batch_emb)
+            print(f"[Embedder]   Batch {i // batch_size + 1}/{(len(texts) + batch_size - 1) // batch_size} done")
 
-        # Mean pool + normalize
-        embeddings = self._mean_pool_and_normalize(token_embeddings, attention_mask)
+        embeddings = np.concatenate(all_embeddings, axis=0)
 
         # Build metadata
         chunks_meta = [
