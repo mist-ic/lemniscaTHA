@@ -32,7 +32,7 @@ function App() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-screen bg-background text-foreground font-sans selection:bg-primary/20 relative overflow-hidden">
+      <div className="flex flex-col h-full bg-background text-foreground font-sans selection:bg-primary/20 relative overflow-hidden">
 
         {/* Ambient BioMed AI Glow Effects & Particles */}
         <div className="fixed inset-0 z-0 overflow-hidden bg-background">
@@ -42,7 +42,7 @@ function App() {
         </div>
 
         {/* Header */}
-        <header className="flex-none px-6 h-14 border-b bg-background/60 backdrop-blur-xl z-20 flex items-center justify-between sticky top-0 shadow-sm border-white/5 dark:border-white/10">
+        <header className="flex-none px-6 h-14 border-b bg-background/60 backdrop-blur-xl z-20 flex items-center justify-between shadow-sm border-white/5 dark:border-white/10">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
               <span className="font-bold text-primary">CP</span>
@@ -64,7 +64,7 @@ function App() {
         </header>
 
         {/* Chat Area */}
-        <main className="flex-1 overflow-hidden flex flex-col relative w-full pt-4">
+        <main className="flex-1 min-h-0 overflow-hidden flex flex-col relative w-full pt-4">
           <ChatArea
             messages={messages}
             onSuggestionClick={sendMessage}

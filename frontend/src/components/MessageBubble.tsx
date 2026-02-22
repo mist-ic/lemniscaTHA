@@ -28,10 +28,8 @@ export function MessageBubble({ message }: Props) {
                 )}
             >
                 {isAssistant && message.isStreaming && !message.content ? (
-                    <div className="flex gap-1 items-center h-6">
-                        <span className="w-1.5 h-1.5 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-1.5 h-1.5 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-1.5 h-1.5 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <div className="flex items-center h-6">
+                        <span className="inline-block w-[2px] h-5 bg-primary animate-pulse" />
                     </div>
                 ) : (
                     <div className={cn("prose prose-sm dark:prose-invert max-w-none break-words",
@@ -41,24 +39,28 @@ export function MessageBubble({ message }: Props) {
                             {message.content}
                         </ReactMarkdown>
                         {isAssistant && message.isStreaming && (
-                            <span className="inline-block w-2 h-4 bg-foreground/50 animate-pulse ml-1 align-middle" />
+                            <span className="inline-block w-[2px] h-4 bg-primary animate-pulse ml-0.5 align-middle" />
                         )}
                     </div>
                 )}
 
-                {isAssistant && message.metadata && (
-                    <div className="mt-4 pt-4 border-t border-border/50">
-                        <ConfidenceIndicator flags={message.metadata.evaluator_flags} />
-                    </div>
-                )}
+                {isAssistant && (message.metadata || (message.sources && message.sources.length > 0)) && (
+                    <div className="mt-4 pt-3 border-t border-border/30">
+                        <div className="bg-muted/40 dark:bg-white/[0.03] rounded-xl px-4 py-3 space-y-3 border border-border/20">
+                            {message.metadata && (
+                                <ConfidenceIndicator flags={message.metadata.evaluator_flags} />
+                            )}
 
-                {isAssistant && message.sources && message.sources.length > 0 && (
-                    <div className="mt-4 flex flex-col gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sources</span>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {message.sources.map((source, i) => (
-                                <SourceCard key={i} source={source} />
-                            ))}
+                            {message.sources && message.sources.length > 0 && (
+                                <div className="flex flex-col gap-2">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Sources</span>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {message.sources.map((source, i) => (
+                                            <SourceCard key={i} source={source} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
