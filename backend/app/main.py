@@ -48,9 +48,9 @@ async def lifespan(app: FastAPI):
 
     settings = get_settings()
 
-    # 1. Initialize embedder
+    # 1. Initialize embedder (ONNX Runtime)
     embedder = Embedder(
-        model_name=settings.EMBEDDING_MODEL,
+        model_dir=settings.ONNX_MODEL_DIR,
         index_dir=settings.INDEX_DIR,
     )
 

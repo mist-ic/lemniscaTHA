@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY frontend/ .
 RUN npm run build
 
-# ===== Stage 2: Python backend with FastAPI + sentence-transformers =====
+# ===== Stage 2: Python backend with FastAPI + ONNX Runtime =====
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -21,32 +21,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install system dependencies (for transformers/torch compilation)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy backend code and install Python dependencies
 COPY backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./backend/
-
-# Copy the 30 ClearPath PDFs
 COPY docs/ ./docs/
-
-# Copy built React assets from Stage 1
 COPY --from=frontend-build /frontend/dist ./frontend_build
 
-# Pre-download the sentence-transformers model at build time
-# to avoid cold-start latency on first request
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+# ONNX model is committed to backend/onnx_model/ (~90MB)
+# No need to download at build time — already in the repo
 
-# Backend imports use 'from app.xxx' so backend/ must be on PYTHONPATH
 ENV PYTHONPATH=/app/backend
-
-# Cloud Run expects the app to listen on $PORT (default 8080)
 ENV PORT=8080
 
 EXPOSE 8080

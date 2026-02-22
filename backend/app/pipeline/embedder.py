@@ -1,37 +1,56 @@
 """
-ClearPath RAG Chatbot — Embedding Module
+ClearPath RAG Chatbot — Embedding Module (ONNX Runtime)
 
-Uses sentence-transformers all-MiniLM-L6-v2 to embed chunks.
-Saves/loads embeddings to/from disk for fast subsequent startups.
+Uses ONNX-exported all-MiniLM-L6-v2 for embedding inference.
+Replaces sentence-transformers/PyTorch to reduce image size from ~4GB to ~1.2GB.
 """
 
 import json
 import os
+from pathlib import Path
 from typing import List
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from onnxruntime import InferenceSession
+from transformers import AutoTokenizer
 
 from app.pipeline.chunker import Chunk
 
+# Resolve ONNX model directory relative to project root
+ONNX_MODEL_DIR = Path(__file__).resolve().parent.parent.parent / "onnx_model"
+
 
 class Embedder:
-    """Embeds text chunks and caches results to disk."""
+    """Embeds text chunks using ONNX runtime and caches results to disk."""
 
     def __init__(
         self,
-        model_name: str = "all-MiniLM-L6-v2",
+        model_dir: str = str(ONNX_MODEL_DIR),
         index_dir: str = "index",
     ):
-        self.model_name = model_name
         self.index_dir = index_dir
         self.embeddings_path = os.path.join(index_dir, "embeddings.npz")
         self.chunks_path = os.path.join(index_dir, "chunks.json")
 
-        # Load the sentence-transformer model
-        print(f"[Embedder] Loading model: {model_name}")
-        self.model = SentenceTransformer(model_name)
-        print(f"[Embedder] Model loaded successfully (dim={self.model.get_sentence_embedding_dimension()})")
+        # Load tokenizer and ONNX session
+        print(f"[Embedder] Loading ONNX model from: {model_dir}")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        self.session = InferenceSession(os.path.join(model_dir, "model.onnx"))
+        print(f"[Embedder] ONNX model loaded successfully (384 dimensions)")
+
+    def _mean_pool_and_normalize(self, token_embeddings: np.ndarray, attention_mask: np.ndarray) -> np.ndarray:
+        """Apply mean pooling over token embeddings, then L2 normalize."""
+        # Expand attention mask for broadcasting: (batch, seq_len) → (batch, seq_len, 1)
+        mask_expanded = np.expand_dims(attention_mask, axis=-1).astype(np.float32)
+        # Sum token embeddings weighted by attention mask
+        summed = np.sum(token_embeddings * mask_expanded, axis=1)
+        # Divide by number of non-padding tokens
+        counts = np.clip(mask_expanded.sum(axis=1), a_min=1e-9, a_max=None)
+        pooled = summed / counts
+        # L2 normalize
+        norms = np.linalg.norm(pooled, axis=1, keepdims=True)
+        norms = np.clip(norms, a_min=1e-9, a_max=None)
+        return (pooled / norms).astype(np.float32)
 
     def has_cached_index(self) -> bool:
         """Check if pre-computed embeddings exist on disk."""
@@ -41,60 +60,50 @@ class Embedder:
         )
 
     def load_index(self) -> tuple:
-        """
-        Load pre-computed embeddings and chunk metadata from disk.
-
-        Returns:
-            (embeddings_matrix, chunks_metadata): numpy array and list of dicts.
-        """
+        """Load pre-computed embeddings and chunk metadata from disk."""
         print(f"[Embedder] Loading cached index from {self.index_dir}/")
         data = np.load(self.embeddings_path)
         embeddings = data["embeddings"]
-
         with open(self.chunks_path, "r", encoding="utf-8") as f:
             chunks_meta = json.load(f)
-
         print(f"[Embedder] Loaded {len(chunks_meta)} chunks, embeddings shape: {embeddings.shape}")
         return embeddings, chunks_meta
 
     def build_index(self, chunks: List[Chunk]) -> tuple:
-        """
-        Embed all chunks and save to disk.
-
-        Args:
-            chunks: List of Chunk objects to embed.
-
-        Returns:
-            (embeddings_matrix, chunks_metadata): numpy array and list of dicts.
-        """
-        print(f"[Embedder] Embedding {len(chunks)} chunks...")
+        """Embed all chunks using ONNX and save to disk."""
+        print(f"[Embedder] Embedding {len(chunks)} chunks with ONNX...")
         texts = [c.text for c in chunks]
 
-        # Encode with L2 normalization (enables dot-product = cosine similarity)
-        embeddings = self.model.encode(
-            texts,
-            normalize_embeddings=True,
-            show_progress_bar=True,
-            batch_size=64,
+        # Tokenize all texts (batched)
+        encoded = self.tokenizer(
+            texts, padding=True, truncation=True, max_length=512, return_tensors="np"
         )
-        embeddings = np.array(embeddings, dtype=np.float32)
+        input_ids = encoded["input_ids"].astype(np.int64)
+        attention_mask = encoded["attention_mask"].astype(np.int64)
+        token_type_ids = encoded.get("token_type_ids", np.zeros_like(input_ids)).astype(np.int64)
 
-        # Build metadata list
+        # Run ONNX inference
+        outputs = self.session.run(None, {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "token_type_ids": token_type_ids,
+        })
+        token_embeddings = outputs[0]  # shape: (batch, seq_len, 384)
+
+        # Mean pool + normalize
+        embeddings = self._mean_pool_and_normalize(token_embeddings, attention_mask)
+
+        # Build metadata
         chunks_meta = [
             {
-                "chunk_id": c.chunk_id,
-                "document": c.document,
-                "page": c.page,
-                "section_heading": c.section_heading,
-                "text": c.text,
-                "token_count": c.token_count,
+                "chunk_id": c.chunk_id, "document": c.document, "page": c.page,
+                "section_heading": c.section_heading, "text": c.text, "token_count": c.token_count,
             }
             for c in chunks
         ]
 
-        # Save to disk
+        # Save
         os.makedirs(self.index_dir, exist_ok=True)
-
         np.savez_compressed(self.embeddings_path, embeddings=embeddings)
         with open(self.chunks_path, "w", encoding="utf-8") as f:
             json.dump(chunks_meta, f, ensure_ascii=False, indent=2)
@@ -103,20 +112,21 @@ class Embedder:
         return embeddings, chunks_meta
 
     def embed_query(self, text: str) -> np.ndarray:
-        """
-        Embed a single query string for retrieval.
-
-        Args:
-            text: Query text.
-
-        Returns:
-            Normalized 1D embedding vector.
-        """
-        embedding = self.model.encode(
-            [text],
-            normalize_embeddings=True,
+        """Embed a single query string for retrieval."""
+        encoded = self.tokenizer(
+            [text], padding=True, truncation=True, max_length=512, return_tensors="np"
         )
-        return np.array(embedding[0], dtype=np.float32)
+        input_ids = encoded["input_ids"].astype(np.int64)
+        attention_mask = encoded["attention_mask"].astype(np.int64)
+        token_type_ids = encoded.get("token_type_ids", np.zeros_like(input_ids)).astype(np.int64)
+
+        outputs = self.session.run(None, {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "token_type_ids": token_type_ids,
+        })
+        embeddings = self._mean_pool_and_normalize(outputs[0], attention_mask)
+        return embeddings[0]
 
 
 if __name__ == "__main__":

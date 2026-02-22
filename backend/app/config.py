@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     DOCS_DIR: str = str(PROJECT_ROOT / "docs")
     INDEX_DIR: str = str(PROJECT_ROOT / "backend" / "index")
 
-    # --- Embedding Model ---
-    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
+    # --- Embedding Model (ONNX) ---
+    ONNX_MODEL_DIR: str = str(PROJECT_ROOT / "backend" / "onnx_model")
 
     # --- Generation ---
     SIMPLE_MAX_TOKENS: int = 512
