@@ -1,0 +1,23 @@
+
+[RUN] Running Eval Harness: test_cases.json against http://localhost:8000
+
+Running [pricing-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [pricing-002]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [pricing-003]... [PASS] | rel=0.67 faith=1.00 flags=1.00 model=True
+Running [feature-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [feature-002]... [PASS] | rel=0.75 faith=1.00 flags=1.00 model=True
+Running [feature-003]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [policy-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [policy-002]... [PASS] | rel=0.50 faith=1.00 flags=1.00 model=True
+Running [policy-003]... [PASS] | rel=0.67 faith=1.00 flags=1.00 model=True
+Running [edge-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [edge-002]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [edge-003]... [PASS] | rel=0.33 faith=1.00 flags=1.00 model=True
+Running [router-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [router-002]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [conflict-001]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+Running [conflict-002]... [PASS] | rel=0.67 faith=1.00 flags=1.00 model=True
+Running [technical-001]... [PASS] | rel=0.67 faith=1.00 flags=1.00 model=True
+
+=== Summary ===
+Total: 17  Passed: 17  Failed: 0

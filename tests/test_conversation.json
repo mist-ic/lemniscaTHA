@@ -1,0 +1,98 @@
+[
+    {
+        "id": "conv-001",
+        "description": "Follow-up pricing query with pronoun resolution",
+        "turns": [
+            {
+                "query": "What is the Pro plan?",
+                "expected_answer_keywords": [
+                    "Pro",
+                    "plan"
+                ],
+                "disallowed_answer_keywords": [],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            },
+            {
+                "query": "How much does it cost?",
+                "expected_answer_keywords": [
+                    "49",
+                    "month"
+                ],
+                "disallowed_answer_keywords": [
+                    "$99"
+                ],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            }
+        ]
+    },
+    {
+        "id": "conv-002",
+        "description": "Follow-up feature query resolving 'it' to ClearPath mobile app",
+        "turns": [
+            {
+                "query": "Tell me about the ClearPath mobile app",
+                "expected_answer_keywords": [
+                    "mobile",
+                    "app",
+                    "iOS",
+                    "Android"
+                ],
+                "disallowed_answer_keywords": [],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            },
+            {
+                "query": "Does it work offline?",
+                "expected_answer_keywords": [
+                    "offline"
+                ],
+                "disallowed_answer_keywords": [],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            }
+        ]
+    },
+    {
+        "id": "conv-003",
+        "description": "Three-turn conversation: topic introduction, follow-up, then detail drill-down",
+        "turns": [
+            {
+                "query": "What integrations does ClearPath support?",
+                "expected_answer_keywords": [
+                    "Slack",
+                    "integrations"
+                ],
+                "disallowed_answer_keywords": [
+                    "office supply",
+                    "procurement portal"
+                ],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            },
+            {
+                "query": "How do I set up Slack?",
+                "expected_answer_keywords": [
+                    "Slack",
+                    "settings"
+                ],
+                "disallowed_answer_keywords": [
+                    "office supply",
+                    "procurement portal"
+                ],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.5
+            },
+            {
+                "query": "Are there any other communication tools besides that?",
+                "expected_answer_keywords": [
+                    "integration"
+                ],
+                "disallowed_answer_keywords": [],
+                "expected_flags": [],
+                "expected_min_relevancy": 0.3
+            }
+        ]
+    }
+]

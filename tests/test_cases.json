@@ -1,0 +1,296 @@
+[
+  {
+    "id": "pricing-001",
+    "query": "What does the Pro plan cost?",
+    "expected_answer_keywords": [
+      "$49",
+      "month",
+      "49"
+    ],
+    "disallowed_answer_keywords": [
+      "$99",
+      "free"
+    ],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "pricing-002",
+    "query": "How much is the Enterprise plan?",
+    "expected_answer_keywords": [
+      "custom",
+      "enterprise"
+    ],
+    "disallowed_answer_keywords": [
+      "$49",
+      "$99"
+    ],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "pricing-003",
+    "query": "Compare Pro and Enterprise pricing",
+    "expected_answer_keywords": [
+      "49",
+      "custom",
+      "unlimited",
+      "25",
+      "users",
+      "storage"
+    ],
+    "disallowed_answer_keywords": [
+      "$99"
+    ],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.4
+  },
+  {
+    "id": "feature-001",
+    "query": "What are the keyboard shortcuts to create a task and search?",
+    "expected_answer_keywords": [
+      "C",
+      "/",
+      "create",
+      "search",
+      "focus"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "feature-002",
+    "query": "Does the mobile app work offline?",
+    "expected_answer_keywords": [
+      "offline",
+      "sync",
+      "cache",
+      "reconnect"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "feature-003",
+    "query": "How do I set up the Slack integration?",
+    "expected_answer_keywords": [
+      "settings",
+      "integrations",
+      "slack",
+      "connect"
+    ],
+    "disallowed_answer_keywords": [
+      "office supply",
+      "procurement portal"
+    ],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "policy-001",
+    "query": "What is the PTO policy?",
+    "expected_answer_keywords": [
+      "unlimited",
+      "15 days",
+      "notice",
+      "2 weeks"
+    ],
+    "disallowed_answer_keywords": [
+      "limited pto",
+      "accrual"
+    ],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "policy-002",
+    "query": "Can I work remotely?",
+    "expected_answer_keywords": [
+      "90 days",
+      "probationary",
+      "vpn",
+      "core hours"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "policy-003",
+    "query": "How should I handle confidential data according to the security policy?",
+    "expected_answer_keywords": [
+      "protect",
+      "confidential",
+      "security"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "edge-001",
+    "query": "Hello",
+    "expected_answer_keywords": [
+      "Hello",
+      "support assistant",
+      "help"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant"
+    ],
+    "expected_min_relevancy": 0.7
+  },
+  {
+    "id": "edge-002",
+    "query": "What's the weather like in San Francisco?",
+    "expected_answer_keywords": [
+      "don't have",
+      "information",
+      "support@clearpath.io"
+    ],
+    "disallowed_answer_keywords": [
+      "sunny",
+      "rain",
+      "fog"
+    ],
+    "expected_flags": [
+      "refusal"
+    ],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "edge-003",
+    "query": "Is Clearpath a good tool for managing construction projects? I am building a house and need to track materials, contractors, and permits. Does it have custom fields for tracking costs and integrating with accounting software?",
+    "expected_answer_keywords": [
+      "custom fields",
+      "Enterprise",
+      "integrations"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.3
+  },
+  {
+    "id": "router-001",
+    "query": "What is ClearPath?",
+    "expected_answer_keywords": [
+      "project management platform",
+      "agile",
+      "teams"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "router-002",
+    "query": "My timeline view isn't loading after upgrading",
+    "expected_answer_keywords": [
+      "timeline",
+      "view"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.5
+  },
+  {
+    "id": "conflict-001",
+    "query": "How much does the Pro plan cost per month?",
+    "expected_answer_keywords": [
+      "$49",
+      "month"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [
+      "conflicting_sources"
+    ],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.4
+  },
+  {
+    "id": "conflict-002",
+    "query": "When was the timeline view feature released or shipped?",
+    "expected_answer_keywords": [
+      "Q2",
+      "October",
+      "August"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.3
+  },
+  {
+    "id": "technical-001",
+    "query": "How do I use the API?",
+    "expected_answer_keywords": [
+      "API",
+      "key",
+      "token"
+    ],
+    "disallowed_answer_keywords": [],
+    "expected_flags": [],
+    "expected_model": [
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile"
+    ],
+    "expected_min_relevancy": 0.3
+  }
+]
