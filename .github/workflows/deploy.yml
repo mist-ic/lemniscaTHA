@@ -23,9 +23,17 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      # Build image using Cloud Build (faster than GitHub Actions Docker)
+      # Configure Docker to push to GCR
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      # Build image on GitHub runner (avoids Cloud Build quota issues)
       - name: Build image
-        run: gcloud builds submit --tag ${{ env.IMAGE }}:${{ github.sha }}
+        run: docker build -t ${{ env.IMAGE }}:${{ github.sha }} .
+
+      # Push to Google Container Registry
+      - name: Push image
+        run: docker push ${{ env.IMAGE }}:${{ github.sha }}
 
       # Deploy to Cloud Run
       - name: Deploy
@@ -46,6 +54,7 @@ jobs:
             --region ${{ env.REGION }} \
             --format 'value(status.url)')
           echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "Deployed to: $URL"
 
       # Run eval harness as quality gate
       - name: Run eval harness
