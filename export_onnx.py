@@ -1,7 +1,7 @@
 """
-One-time script: Export all-MiniLM-L6-v2 to ONNX format.
+One-time script: Export BAAI/bge-small-en-v1.5 to ONNX format.
 
-Produces backend/onnx_model/ directory (~90MB) containing:
+Produces backend/onnx_model/ directory (~130MB) containing:
   - model.onnx
   - tokenizer.json, tokenizer_config.json, etc.
 
@@ -13,7 +13,7 @@ Usage:
 from optimum.onnxruntime import ORTModelForFeatureExtraction
 from transformers import AutoTokenizer
 
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+MODEL_NAME = "BAAI/bge-small-en-v1.5"
 OUTPUT_DIR = "backend/onnx_model"
 
 print(f"[Export] Exporting {MODEL_NAME} to ONNX...")

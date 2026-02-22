@@ -1,0 +1,16 @@
+
+[RUN] Running Eval Harness: tests/test_conversation.json against http://localhost:8000
+
+[CONVERSATION] conv-001: Follow-up pricing query with pronoun resolution
+  Running [conv-001/turn-1]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+  Running [conv-001/turn-2]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+[CONVERSATION] conv-002: Follow-up feature query resolving 'it' to ClearPath mobile app
+  Running [conv-002/turn-1]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+  Running [conv-002/turn-2]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+[CONVERSATION] conv-003: Three-turn conversation: topic introduction, follow-up, then detail drill-down
+  Running [conv-003/turn-1]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+  Running [conv-003/turn-2]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+  Running [conv-003/turn-3]... [PASS] | rel=1.00 faith=1.00 flags=1.00 model=True
+
+=== Summary ===
+Total: 7  Passed: 7  Failed: 0

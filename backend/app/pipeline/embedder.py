@@ -1,8 +1,8 @@
 """
 ClearPath RAG Chatbot — Embedding Module (ONNX Runtime)
 
-Uses ONNX-exported all-MiniLM-L6-v2 for embedding inference.
-Replaces sentence-transformers/PyTorch to reduce image size from ~4GB to ~1.2GB.
+Uses ONNX-exported BAAI/bge-small-en-v1.5 for embedding inference.
+ONNX Runtime replaces sentence-transformers/PyTorch — 67% smaller Docker image.
 """
 
 import json
@@ -36,7 +36,9 @@ class Embedder:
         print(f"[Embedder] Loading ONNX model from: {model_dir}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
         self.session = InferenceSession(os.path.join(model_dir, "model.onnx"))
-        print(f"[Embedder] ONNX model loaded successfully (384 dimensions)")
+        # Detect embedding dimensions from ONNX model output shape
+        self._dims = self.session.get_outputs()[0].shape[-1]
+        print(f"[Embedder] ONNX model loaded successfully ({self._dims} dimensions)")
 
     def _mean_pool_and_normalize(self, token_embeddings: np.ndarray, attention_mask: np.ndarray) -> np.ndarray:
         """Apply mean pooling over token embeddings, then L2 normalize."""

@@ -1,0 +1,129 @@
+Loaded 93 chunks
+
+
+------------------------------------------------------------
+  all-MiniLM-L6-v2 (22M, 384d)
+  HF: all-MiniLM-L6-v2
+------------------------------------------------------------
+  Loading model... done (6.0s)
+  Embedding 93 chunks... done (1.94s)
+  Avg top-1 score: 0.5441
+  Avg query time:  8.4ms
+  Model load:      6.0s
+
+------------------------------------------------------------
+  BGE-small-en-v1.5 (33M, 384d)
+  HF: BAAI/bge-small-en-v1.5
+------------------------------------------------------------
+'(ReadTimeoutError("HTTPSConnectionPool(host='huggingface.co', port=443): Read timed out. (read timeout=10)"), '(Request ID: e557a561-fe97-4301-aa2b-0d30910e5f92)')' thrown while requesting HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json
+Retrying in 1s [Retry 1/5].
+  Loading model... done (18.3s)
+  Embedding 93 chunks... done (4.31s)
+  Avg top-1 score: 0.7066
+  Avg query time:  16.3ms
+  Model load:      18.3s
+
+------------------------------------------------------------
+  BGE-large-en-v1.5 (335M, 1024d)
+  HF: BAAI/bge-large-en-v1.5
+------------------------------------------------------------
+'(ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')), '(Request ID: aeb0dd2f-ee9c-4cb3-9641-93ff22221ab2)')' thrown while requesting HEAD https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/model.safetensors
+Retrying in 1s [Retry 1/5].
+'(ProtocolError('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)), '(Request ID: 24e6ba27-7784-4592-aa06-cdae4d4c2225)')' thrown while requesting HEAD https://huggingface.co/BAAI/bge-large-en-v1.5/resolve/main/model.safetensors
+Retrying in 2s [Retry 2/5].
+  Loading model... done (272.6s)
+  Embedding 93 chunks... done (45.41s)
+  Avg top-1 score: 0.6835
+  Avg query time:  111.7ms
+  Model load:      272.6s
+
+------------------------------------------------------------
+  GTE-large-en-v1.5 (335M, 1024d)
+  HF: Alibaba-NLP/gte-large-en-v1.5
+------------------------------------------------------------
+A new version of the following files was downloaded from https://huggingface.co/Alibaba-NLP/new-impl:
+- configuration.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/Alibaba-NLP/new-impl:
+- modeling.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+  Loading model... done (350.8s)
+  Embedding 93 chunks... done (61.08s)
+  Avg top-1 score: 0.6883
+  Avg query time:  116.7ms
+  Model load:      350.8s
+
+------------------------------------------------------------
+  Snowflake-arctic-embed-s (33M, 384d)
+  HF: Snowflake/snowflake-arctic-embed-s
+------------------------------------------------------------
+  Loading model... done (52.3s)
+  Embedding 93 chunks... done (4.09s)
+  Avg top-1 score: 0.6884
+  Avg query time:  16.4ms
+  Model load:      52.3s
+
+------------------------------------------------------------
+  Stella-400M-v5 (400M, 1024d)
+  HF: dunzhang/stella_en_400M_v5
+------------------------------------------------------------
+A new version of the following files was downloaded from https://huggingface.co/dunzhang/stella_en_400M_v5:
+- configuration.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/dunzhang/stella_en_400M_v5:
+- modeling.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+  Loading model...   FAILED to load: please install xformers
+
+------------------------------------------------------------
+  BGE-M3 (dense) (568M, 1024d)
+  HF: BAAI/bge-m3
+------------------------------------------------------------
+  Loading model... done (242.8s)
+  Embedding 93 chunks... done (47.98s)
+  Avg top-1 score: 0.6497
+  Avg query time:  96.1ms
+  Model load:      242.8s
+
+
+==============================================================================================================
+FINAL COMPARISON ΓÇö RANKED BY RETRIEVAL QUALITY
+==============================================================================================================
+
+Rank  Model                     Params   Dims    Avg Top-1   Query ms   MTEB(BEIR)
+--------------------------------------------------------------------------------------------------------------
+1     BGE-small-en-v1.5         33M      384        0.7066       16.3        ~51.7  (+0.162)
+2     Snowflake-arctic-embed-s  33M      384        0.6884       16.4        ~51.0  (+0.144)
+3     GTE-large-en-v1.5         335M     1024       0.6883      116.7        ~55.2  (+0.144)
+4     BGE-large-en-v1.5         335M     1024       0.6835      111.7        ~54.3  (+0.139)
+5     BGE-M3 (dense)            568M     1024       0.6497       96.1        ~54.9  (+0.106)
+6     all-MiniLM-L6-v2          22M      384        0.5441        8.4        ~49.5  (+0.000)
+
+
+==============================================================================================================
+PER-QUERY BREAKDOWN (Top 3 models)
+==============================================================================================================
+Query ID            BGE-small-en-v1.5 Snowflake-arctic-embed-s    GTE-large-en-v1.5
+-------------------------------------------------------------------------------
+pricing-001                    0.6735               0.6266               0.6373
+pricing-003                    0.7265               0.7038               0.7774
+feature-001                    0.8149               0.7800               0.7922
+feature-002                    0.8304               0.7284               0.7503
+feature-003                    0.6982               0.7177               0.6588
+policy-001                     0.6488               0.6886               0.6747
+policy-002                     0.7403               0.6897               0.6462
+edge-003                       0.7742               0.7503               0.7564
+inject-001                     0.6735               0.6266               0.6373
+inject-004                     0.6310               0.6967               0.6675
+conflict-001                   0.7092               0.6601               0.6500
+conflict-002                   0.6753               0.6625               0.6942
+technical-001                  0.6661               0.6370               0.6413
+router-002                     0.6298               0.6696               0.6525
+
+
+TOP-1 DOCUMENT AGREEMENT vs best model (BGE-small-en-v1.5):
+  Snowflake-arctic-embed-s : 12/14 agree
+  GTE-large-en-v1.5        : 6/14 agree
+  BGE-large-en-v1.5        : 12/14 agree
+  BGE-M3 (dense)           : 11/14 agree
+  all-MiniLM-L6-v2         : 11/14 agree
