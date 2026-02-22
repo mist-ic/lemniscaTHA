@@ -25,3 +25,16 @@ Thumbs.db
 
 # Embedding index (regenerated on startup)
 index/
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun.lockb
+.eslintcache
+.vite/
