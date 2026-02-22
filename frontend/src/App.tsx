@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const { messages, isStreaming, sendMessage } = useStreamingChat();
+  const { messages, isStreaming, sendMessage, stopStreaming } = useStreamingChat();
 
   useEffect(() => {
     // Dark mode by default
@@ -76,6 +76,7 @@ function App() {
         <div className="w-full relative z-10 pb-env-safe">
           <InputArea
             onSend={sendMessage}
+            onStop={stopStreaming}
             disabled={isStreaming}
           />
         </div>

@@ -1,15 +1,16 @@
 import { useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal, Loader2 } from "lucide-react";
+import { SendHorizontal, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
     onSend: (message: string) => void;
+    onStop?: () => void;
     disabled: boolean;
 }
 
-export function InputArea({ onSend, disabled }: Props) {
+export function InputArea({ onSend, onStop, disabled }: Props) {
     const [input, setInput] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -54,18 +55,26 @@ export function InputArea({ onSend, disabled }: Props) {
                     rows={1}
                     disabled={disabled}
                 />
-                <Button
-                    onClick={handleSend}
-                    disabled={!input.trim() || disabled}
-                    size="icon"
-                    className="h-11 w-11 rounded-xl shrink-0 transition-all hover:scale-105 active:scale-95"
-                >
-                    {disabled ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
+                {disabled && onStop ? (
+                    <Button
+                        onClick={onStop}
+                        size="icon"
+                        variant="destructive"
+                        className="h-11 w-11 rounded-xl shrink-0 transition-all hover:scale-105 active:scale-95"
+                        aria-label="Stop generating"
+                    >
+                        <Square className="h-4 w-4 fill-current" />
+                    </Button>
+                ) : (
+                    <Button
+                        onClick={handleSend}
+                        disabled={!input.trim() || disabled}
+                        size="icon"
+                        className="h-11 w-11 rounded-xl shrink-0 transition-all hover:scale-105 active:scale-95"
+                    >
                         <SendHorizontal className="h-5 w-5" />
-                    )}
-                </Button>
+                    </Button>
+                )}
             </div>
         </div>
     );
