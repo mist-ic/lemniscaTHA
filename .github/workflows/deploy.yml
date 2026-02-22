@@ -3,6 +3,11 @@ name: Deploy to Cloud Run
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'Dockerfile'
+      - '.github/workflows/deploy.yml'
 
 env:
   PROJECT_ID: lemnisca
@@ -27,13 +32,34 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
 
-      # Build image on GitHub runner (avoids Cloud Build quota issues)
-      - name: Build image
-        run: docker build -t ${{ env.IMAGE }}:${{ github.sha }} .
+      # Cache Docker layers for faster rebuilds
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('backend/requirements.txt', 'frontend/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      # Push to Google Container Registry
-      - name: Push image
-        run: docker push ${{ env.IMAGE }}:${{ github.sha }}
+      # Set up Docker Buildx for advanced caching
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build image with layer caching (skips unchanged layers)
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      # Prevent cache from growing indefinitely
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       # Deploy to Cloud Run
       - name: Deploy
