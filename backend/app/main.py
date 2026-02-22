@@ -10,11 +10,14 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.config import get_settings
+from app.config import get_settings, PROJECT_ROOT
 from app.schemas import QueryRequest, QueryResponse, QueryMetadata, TokenUsage, SourceInfo
 from app.router.classifier import classify_query, is_greeting, GREETING_RESPONSE
 from app.pipeline.embedder import Embedder
@@ -466,3 +469,30 @@ async def query_stream(request: QueryRequest):
             "X-Accel-Buffering": "no",  # disable nginx buffering
         },
     )
+
+
+# ─── Production Static File Serving ────────────────────────
+# When running inside Docker, frontend_build/ contains the React SPA.
+# In dev mode, Vite dev server handles the frontend instead.
+
+FRONTEND_DIR = PROJECT_ROOT / "frontend_build"
+
+if FRONTEND_DIR.exists():
+    # Serve Vite-built assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIR / "assets")), name="static")
+
+    # Catch-all route for React SPA client-side routing
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """Serve static files if they exist, otherwise serve React index.html (SPA catch-all)."""
+        # Check if the requested path is an actual file in frontend_build/
+        requested_file = FRONTEND_DIR / full_path
+        if full_path and requested_file.exists() and requested_file.is_file():
+            return FileResponse(str(requested_file))
+
+        # Default: serve index.html for SPA routing
+        index_file = FRONTEND_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        return {"error": "Frontend build not found"}
+

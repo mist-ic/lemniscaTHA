@@ -1,0 +1,46 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.eggs/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Frontend build artifacts (rebuilt in Docker)
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files (secrets passed via --set-env-vars)
+.env
+.env.*
+
+# Pre-computed index (rebuilt on startup)
+backend/index/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files not needed in image
+bun.lockb
+frontend/bun.lock
+
+# Tests (not needed in production image)
+tests/
+
+# Agent files
+.agent/
+.agents/
