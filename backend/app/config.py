@@ -10,8 +10,8 @@ from functools import lru_cache
 from pathlib import Path
 from pydantic_settings import BaseSettings
 
-# Project root = lemniscaTHA/ (two levels up from this file: config.py -> app/ -> backend/ -> lemniscaTHA/)
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent  # lemniscaTHA/
+# Project root (two levels up from this file: config.py -> app/ -> backend/ -> project root)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):

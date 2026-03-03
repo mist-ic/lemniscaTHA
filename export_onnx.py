@@ -6,7 +6,7 @@ Produces backend/onnx_model/ directory (~130MB) containing:
   - tokenizer.json, tokenizer_config.json, etc.
 
 Usage:
-    cd lemniscaTHA
+    cd RAG-fromScratch
     python export_onnx.py
 """
 
